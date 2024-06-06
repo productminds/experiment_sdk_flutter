@@ -12,6 +12,8 @@ class ExperimentConfig {
   final bool? automaticExposureTracking;
   final ExperimentExposureTrackingProvider? exposureTrackingProvider;
 
+  Duration get timeout => Duration(milliseconds: fetchTimeoutMillis ?? 5000);
+
   ExperimentConfig(
       {this.debug = false,
       this.instanceName = '\$default_instance',

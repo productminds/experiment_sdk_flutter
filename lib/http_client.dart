@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:experiment_sdk_flutter/types/experiment_fetch_item.dart';
@@ -20,11 +21,23 @@ class HttpClient {
   bool _isRetry = false;
   Map<String, ExperimentFetchItem> fetchResult = {};
 
+  final httpClient = http.Client();
+
   /// Get function invoked on HTTP requests
-  Future<void> get(QueryParameters queryParameters) async {
+  Future<void> get(QueryParameters queryParameters, [Duration? timeout]) async {
     final uri = Uri.https(_baseUri, '/v1/vardata', queryParameters.toJson());
-    final response =
-        await http.get(uri, headers: {'Authorization': 'Api-Key $_apiKey'});
+
+    final request =
+        httpClient.get(uri, headers: {'Authorization': 'Api-Key $_apiKey'});
+
+    if (timeout != null) {
+      request.timeout(
+        timeout,
+        onTimeout: () => throw TimeoutException('Request timed out!'),
+      );
+    }
+
+    final response = await request;
 
     if (response.statusCode != 200) {
       String data = response.body;
@@ -40,7 +53,7 @@ class HttpClient {
       }
 
       _isRetry = true;
-      get(queryParameters);
+      get(queryParameters, timeout);
     }
 
     Map<String, dynamic> data =

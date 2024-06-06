@@ -35,7 +35,7 @@ class ExperimentClient {
     final input = ExperimentFetchInput(
         userId: userId, deviceId: deviceId, userProperties: userProperties);
 
-    await _httpClient.get(input);
+    await _httpClient.get(input, _config?.timeout);
 
     _log(
         '[Experiment] Fetched ${_httpClient.fetchResult.length} experiment(s) for this user!');
