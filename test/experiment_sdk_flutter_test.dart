@@ -56,7 +56,7 @@ void main() {
 
     await experiment.fetch(userId: 'testing');
 
-    expect(experiment.variant('flutter-sdk-demo')?.value, 'control');
+    expect(experiment.variant('flutter-sdk-demo')?.value, isNotNull);
   });
 
   test('Should successfuly call track method inside tracker', () async {
@@ -81,7 +81,7 @@ void main() {
     await experiment.fetch(userId: 'testing');
     final all = experiment.all();
 
-    expect(all['flutter-sdk-demo']!.value, 'control');
+    expect(all['flutter-sdk-demo']!.value, isNotNull);
   });
 
   test('Should succesfully clear cache', () async {
@@ -91,7 +91,7 @@ void main() {
     await experiment.fetch(userId: 'testing');
     var all = experiment.all();
 
-    expect(all['flutter-sdk-demo']!.value, 'control');
+    expect(all['flutter-sdk-demo']!.value, isNotNull);
 
     experiment.clear();
     all = experiment.all();

@@ -11,8 +11,24 @@ class LocalStorage {
   @protected
   Map<String, ExperimentVariant> map = {};
 
-  LocalStorage({required String apiKey}) : namespace = _getNamespace(apiKey) {
-    SharedPreferences.setPrefix(namespace);
+  static final Set<String> _prefixesSet = {};
+
+  LocalStorage({required String apiKey}) : namespace = _getNamespace(apiKey);
+
+  Future<void> _ensurePrefix() async {
+    if (!_prefixesSet.contains(namespace)) {
+      // Check if getInstance has already been called
+      try {
+        SharedPreferences.setPrefix(namespace);
+        _prefixesSet.add(namespace);
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint(
+            '[LocalStorage] Skipping setPrefix("$namespace")',
+          );
+        }
+      }
+    }
   }
 
   void put(String key, ExperimentVariant value) {
@@ -34,6 +50,7 @@ class LocalStorage {
   }
 
   void load() async {
+    await _ensurePrefix();
     final prefs = await SharedPreferences.getInstance();
 
     final keys = prefs.getKeys();
@@ -49,6 +66,7 @@ class LocalStorage {
   }
 
   void save() async {
+    await _ensurePrefix();
     final prefs = await SharedPreferences.getInstance();
 
     map.forEach((key, value) {
