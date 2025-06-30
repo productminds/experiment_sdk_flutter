@@ -41,53 +41,57 @@ void main() {
 
   test('Should succesfull fetch with a valid apiKey', () async {
     final experiment = Experiment.initialize(
-        apiKey: 'client-SyuVa4OF1vMBD5F59JMRwcZJutII4gZ2');
+        apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
+
+    await experiment.fetch(userId: 'testing');
+
+    print(experiment.all());
 
     expect(experiment.fetch(userId: 'testing'), completion(null));
   });
 
   test('Should has one variant', () async {
     final experiment = Experiment.initialize(
-        apiKey: 'client-SyuVa4OF1vMBD5F59JMRwcZJutII4gZ2');
+        apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
     await experiment.fetch(userId: 'testing');
 
-    expect(experiment.variant('testing-sdk')?.value, 'control');
+    expect(experiment.variant('flutter-sdk-demo')?.value, 'control');
   });
 
   test('Should successfuly call track method inside tracker', () async {
     final mocked = MockedTracker();
 
     final experiment = Experiment.initialize(
-        apiKey: 'client-SyuVa4OF1vMBD5F59JMRwcZJutII4gZ2',
+        apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ',
         config: ExperimentConfig(
             automaticExposureTracking: true, exposureTrackingProvider: mocked));
 
     await experiment.fetch(userId: 'testing');
-    experiment.variant('testing-sdk');
-    experiment.exposure('testing-sdk');
+    experiment.variant('flutter-sdk-demo');
+    experiment.exposure('flutter-sdk-demo');
 
     expect(mocked.result, 0);
   });
 
   test('Should return a map with variant on all method', () async {
     final experiment = Experiment.initialize(
-        apiKey: 'client-SyuVa4OF1vMBD5F59JMRwcZJutII4gZ2');
+        apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
     await experiment.fetch(userId: 'testing');
     final all = experiment.all();
 
-    expect(all['testing-sdk']!.value, 'control');
+    expect(all['flutter-sdk-demo']!.value, 'control');
   });
 
   test('Should succesfully clear cache', () async {
     final experiment = Experiment.initialize(
-        apiKey: 'client-SyuVa4OF1vMBD5F59JMRwcZJutII4gZ2');
+        apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
     await experiment.fetch(userId: 'testing');
     var all = experiment.all();
 
-    expect(all['testing-sdk']!.value, 'control');
+    expect(all['flutter-sdk-demo']!.value, 'control');
 
     experiment.clear();
     all = experiment.all();

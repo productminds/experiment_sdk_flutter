@@ -51,7 +51,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   final experiment =
-      Experiment.initialize(apiKey: 'client-SyuVa4OF1vMBD5F59JMRwcZJutII4gZ2');
+      Experiment.initialize(apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
   void _incrementCounter() async {
     await experiment.fetch(userId: 'testing');
