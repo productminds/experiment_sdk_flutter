@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:experiment_sdk_flutter/types/experiment_config.dart';
+import 'package:experiment_sdk_flutter/types/experiment_expose_tracking_context.dart';
 import 'package:experiment_sdk_flutter/types/experiment_exposure_tracking_provider.dart';
 import 'package:experiment_sdk_flutter/types/experiment_variant.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,12 @@ class MockedTracker implements ExperimentExposureTrackingProvider {
     // ↓ mock an result to exposure to ensure that is called
     result = 0;
   }
+
+  @override
+  Future<ExposureTrackingContext> getContext(String instanceName) async {
+    // TODO: implement getContext
+    return ExposureTrackingContext();
+  }
 }
 
 void main() {
@@ -35,7 +42,7 @@ void main() {
   test('Should throw error if called with wrong apikey', () {
     final experiment = Experiment.initialize(apiKey: '');
 
-    expect(experiment.fetch(userId: 'testing'),
+    expect(experiment.fetch(deviceId: 'testing'),
         throwsA(const TypeMatcher<Exception>()));
   });
 
@@ -43,18 +50,16 @@ void main() {
     final experiment = Experiment.initialize(
         apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
-    await experiment.fetch(userId: 'testing');
+    await experiment.fetch(deviceId: 'testing');
 
-    print(experiment.all());
-
-    expect(experiment.fetch(userId: 'testing'), completion(null));
+    expect(experiment.fetch(deviceId: 'testing'), completion(null));
   });
 
   test('Should has one variant', () async {
     final experiment = Experiment.initialize(
         apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
-    await experiment.fetch(userId: 'testing');
+    await experiment.fetch(deviceId: 'testing');
 
     expect(experiment.variant('flutter-sdk-demo')?.value, isNotNull);
   });
@@ -67,7 +72,7 @@ void main() {
         config: ExperimentConfig(
             automaticExposureTracking: true, exposureTrackingProvider: mocked));
 
-    await experiment.fetch(userId: 'testing');
+    await experiment.fetch(deviceId: 'testing');
     experiment.variant('flutter-sdk-demo');
     experiment.exposure('flutter-sdk-demo');
 
@@ -78,7 +83,7 @@ void main() {
     final experiment = Experiment.initialize(
         apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
-    await experiment.fetch(userId: 'testing');
+    await experiment.fetch(deviceId: 'testing');
     final all = experiment.all();
 
     expect(all['flutter-sdk-demo']!.value, isNotNull);
@@ -88,7 +93,7 @@ void main() {
     final experiment = Experiment.initialize(
         apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
 
-    await experiment.fetch(userId: 'testing');
+    await experiment.fetch(deviceId: 'testing');
     var all = experiment.all();
 
     expect(all['flutter-sdk-demo']!.value, isNotNull);

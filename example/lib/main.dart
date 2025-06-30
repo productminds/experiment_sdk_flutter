@@ -1,4 +1,8 @@
+import 'package:amplitude_flutter/events/base_event.dart';
 import 'package:experiment_sdk_flutter/experiment_sdk_flutter.dart';
+import 'package:amplitude_flutter/amplitude.dart';
+import 'package:amplitude_flutter/configuration.dart';
+import 'package:experiment_sdk_flutter/types/experiment_config.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -50,14 +54,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  final experiment =
-      Experiment.initialize(apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ');
+  final amplitude =
+      Amplitude(Configuration(apiKey: '2b82f618e4100e931f2b1730b3c7ca92'));
+  final experiment = Experiment.initializeWithAmplitude(
+      apiKey: 'client-TgXx6plnArNPL2ck4sKc6QtAJ8lbu8nQ',
+      config: ExperimentConfig(automaticExposureTracking: true));
 
   void _incrementCounter() async {
-    await experiment.fetch(userId: 'testing');
-    final experiments = experiment.all();
+    var deviceId = await amplitude.getDeviceId();
+    await experiment.fetch(deviceId: deviceId);
+    final experimentVariant = experiment.variant('flutter-sdk-demo');
 
-    print(experiments);
+    amplitude.track(
+      BaseEvent(
+        'flutter-sdk-demo',
+        eventProperties: {
+          'variant': experimentVariant?.value,
+          'userId': 'testing',
+        },
+      ),
+    );
+
+    await amplitude.flush();
+
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below

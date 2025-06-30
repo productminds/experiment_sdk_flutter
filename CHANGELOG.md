@@ -50,3 +50,8 @@
 * Update dependencies 
 * Change SharedPreferences implementation to be compatible with last version
 * Fix tests credentials 
+
+## v1.4.1
+* Update dependencies 
+* Add context method in exposureTrackingProvider
+

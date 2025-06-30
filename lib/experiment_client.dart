@@ -27,13 +27,23 @@ class ExperimentClient {
     _localStorage.load();
   }
 
+  // Grab the instance name from the config or use a default
+  String _getInstanceName() {
+    return _config?.instanceName ?? '\$default_instance';
+  }
+
   /// Fetch an experiment or feature flag by user info
   Future<void> fetch(
       {String? userId,
       String? deviceId,
       Map<String, dynamic>? userProperties}) async {
+    final context =
+        await _config?.exposureTrackingProvider?.getContext(_getInstanceName());
+
     final input = ExperimentFetchInput(
-        userId: userId, deviceId: deviceId, userProperties: userProperties);
+        userId: userId ?? context?.userId,
+        deviceId: deviceId ?? context?.deviceId,
+        userProperties: userProperties ?? context?.userProperties);
 
     await _httpClient.get(input, _config?.timeout);
 
@@ -64,7 +74,7 @@ class ExperimentClient {
     final sourceAndVariant = _getSourceAndVariant(flagKey);
     final source = sourceAndVariant?.source;
     final variant = sourceAndVariant?.variant;
-    final instanceName = _config?.instanceName ?? '\$default_instance';
+    final instanceName = _getInstanceName();
 
     if (source != null &&
         isFallback(source) &&
